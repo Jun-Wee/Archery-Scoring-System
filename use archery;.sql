@@ -244,10 +244,14 @@ SELECT SUM((arrowOneScore + arrowFiveScore + arrowFourScore + arrowSixScore + ar
 FROM end 
 where archerID='A001' and competitionID = 'WA90';
 
---Select winner archer in one competition
-Select archerID as 'Winner of the competition', Max(Score) from 
-(SELECT archerID, SUM((arrowOneScore + arrowFiveScore + arrowFourScore + arrowSixScore + arrowThreeScore + arrowTwoScore)) as Score
-FROM end where competitionID = 'WA90' group by archerID) as s;
+--Select winner archer in one competition  using subquery derived table
+--https://dev.mysql.com/doc/refman/8.0/en/derived-tables.html#:~:text=Here%20is%20how%20to%20use%20a%20subquery%20in%20the%20FROM%20clause%2C%20using%20the%20example%20table
+-- the order by is to list the table from top score to low score
+
+Select archerID as 'Winner of the competition', Max(Score) from
+    (SELECT archerID, SUM((arrowOneScore + arrowFiveScore + arrowFourScore + arrowSixScore + arrowThreeScore + arrowTwoScore)) as "Score"
+    FROM end where competitionID = 'WA90' and Date(endDate) = "2022-06-12" group by archerID order by Score DESC) as derivedtable;
+
 
 --yearly 2023 club championship result winner
 championship, club, archer, end
@@ -257,6 +261,16 @@ where c.startDate = '2023';
 
 
 --archer personal best score 
+SELECT * FROM end 
+where archerID = 'A201' and competitionID = 'AA40' and endDate like '2022-03-31%';
 
 
 
+use archery;
+INSERT INTO `archery`.`archercompetition` (`archerID`, `competitionID`, `joinCompetitionDate`) 
+VALUES ('A440', 'WA60', '2000-06-19 16:41:02');
+
+SELECT * FROM archery.archercompetition;
+
+DELETE FROM `archery`.`archercompetition` 
+WHERE (`archerID` = 'A440') and (`competitionID` = 'WA60') and (`joinCompetitionDate` = '2000-06-19 16:41:02');
